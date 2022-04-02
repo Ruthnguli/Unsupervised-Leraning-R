@@ -1,0 +1,113 @@
+---
+title: "Anomaly detection"
+author: "RuthNguli"
+date: '2022-04-01'i
+output: html_document
+---
+
+## loading libraries
+```{r}
+# calling libraries to be used
+#
+library(tidyverse)
+library(anomalize)
+library(tibbletime)
+library(dplyr)
+library(tibble)
+library(tsibble)
+library(magrittr)
+```
+
+## Loading and reading data
+
+```{r}
+# loading and reading data fro url
+#
+data <- read.csv("http://bit.ly/CarreFourSalesDataset")
+
+# previewing the head of data
+#
+head(data)
+```
+```{r}
+# Previewing the tail of data
+#
+ tail(data)
+```
+
+
+```{r}
+# Previewing the data structure 
+#
+str(data)
+```
+
+
+```{r}
+# Summary of data
+# 
+summary(data)
+
+```
+```{r}
+anyDuplicated(data)
+```
+```{r}
+# converting data to tibble
+#
+df <- as_tibble(data)
+
+#Checking the changes
+#
+class(data)
+```
+
+```{r}
+# Converting date column to tibl_time
+#
+df$Date <- as.Date(df$Date, format = "%m/%d/%Y")
+
+# Converting to pocxit
+#
+df$Date <- as.POSIXct(df$Date)
+
+```
+
+
+## Perfoming Anomalize
+
+```{r}
+# Anomalizing
+# 
+data_Amon <- df %>%
+  time_decompose(Sales, merge = TRUE) %>% 
+        anomalize(remainder) %>% 
+  time_recompose()
+
+
+glimpse(data_Amon)
+```
+
+```{r}
+# Visualizing
+
+data_Amon %>% 
+  plot_anomalies(time_recomposed = TRUE, ncol = 3, alpha_dots = 0.5)
+  
+plot
+
+```
+There are no anomalies.
+
+```{r}
+# Visualizing and adjusting alpha
+
+data_Amon %>% 
+  plot_anomalies(time_recomposed = TRUE, ncol = 3, alpha_dots = 0.05)
+  
+plot
+
+```
+the data has no presence of anomalies
+
+
